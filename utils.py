@@ -1,6 +1,5 @@
 import networkx as nx
 
-
 def obtener_digrafo_parcial_minimo(G):
     # Asumimos que el vértice raíz está en list(G.nodes)[0]
     vertices = list(G.nodes)
@@ -23,7 +22,7 @@ def obtener_digrafo_parcial_minimo(G):
     return Gs
 
 
-def contraer(G, Gs, ciclo):
+def contraer(G, Gs, ciclo, s):
     """
     G grafo papa
     W ciclo
@@ -33,7 +32,7 @@ def contraer(G, Gs, ciclo):
     Gw0_sucesores = []
 
     aristas = list(G.edges)
-    vertice_contraido = 'w0'
+    vertice_contraido = f'w{s}'
     for arista in aristas:
         extremo_inicial = arista[0]
         extremo_final = arista[1]
@@ -68,13 +67,10 @@ def contraer(G, Gs, ciclo):
                 ),
             )
 
-    Gw = Gw0_base + Gw0_predecesores
-    Gw.append(
-        min(Gw0_sucesores, key=lambda x: x[2])
-    )
+    Gw = Gw0_base + Gw0_predecesores + Gw0_sucesores
 
     Gss = nx.DiGraph()
-    Gss.add_nodes_from((set(G.nodes).difference(ciclo)).union({'w0'}))
+    Gss.add_nodes_from((set(G.nodes).difference(ciclo)).union({vertice_contraido}))
     Gss.add_weighted_edges_from(Gw)
 
     return Gss
